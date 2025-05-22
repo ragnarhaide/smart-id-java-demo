@@ -32,11 +32,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ee.sk.siddemo.model.DynamicContent;
-import ee.sk.smartid.v3.AuthCode;
-import ee.sk.smartid.v3.DynamicContentBuilder;
-import ee.sk.smartid.v3.DynamicLinkType;
-import ee.sk.smartid.v3.SessionType;
-import ee.sk.smartid.v3.SmartIdClient;
+import ee.sk.smartid.AuthCode;
+import ee.sk.smartid.DynamicContentBuilder;
+import ee.sk.smartid.DynamicLinkType;
+import ee.sk.smartid.SessionType;
+import ee.sk.smartid.SmartIdClient;
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -44,13 +44,13 @@ public class DynamicContentService {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicContentService.class);
 
-    @Value("${sid.v3.client.dynamic-link-url}")
+    @Value("${sid.client.dynamic-link-url}")
     private String dynamicLinkUrl;
 
-    public final SmartIdClient smartIdClientV3;
+    public final SmartIdClient smartIdClient;
 
-    public DynamicContentService(SmartIdClient smartIdClientV3) {
-        this.smartIdClientV3 = smartIdClientV3;
+    public DynamicContentService(SmartIdClient smartIdClient) {
+        this.smartIdClient = smartIdClient;
     }
 
     public DynamicContent getDynamicContent(HttpSession session, SessionType sessionType) {
@@ -65,7 +65,7 @@ public class DynamicContentService {
         long elapsedSeconds = Duration.between(responseReceivedTime, Instant.now()).getSeconds();
         logger.info("Dynamic content elapsed seconds: {}", elapsedSeconds);
 
-        DynamicContentBuilder contentBuilder = smartIdClientV3.createDynamicContent()
+        DynamicContentBuilder contentBuilder = smartIdClient.createDynamicContent()
                 .withBaseUrl(dynamicLinkUrl)
                 .withSessionType(sessionType)
                 .withSessionToken(sessionToken)

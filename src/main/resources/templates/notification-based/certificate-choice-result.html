@@ -5,22 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Smart-ID</title>
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="../../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../../static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
 
-<div class="text-center py-5">
-    <div class="container">
-        <h1>Smart-ID demo</h1>
-        <p class="lead">
-            This application will demonstrate the use of Smart-ID with the RP API v3. <br>
-        </p>
-        <a href="/rp-api-v3" class="btn btn-primary btn-lg">RP API v3</a>
-    </div>
+<div class="container-fluid d-flex flex-column align-items-center justify-content-center vh-100">
+    <h1> Certificate choice result</h1>
+    <p>
+        <span th:text="${distinguishedName}"></span>
+    </p>
 </div>
+
 <script th:src="@{/js/bootstrap.js}"></script>
 </body>
 
