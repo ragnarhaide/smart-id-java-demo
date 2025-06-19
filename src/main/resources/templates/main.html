@@ -74,13 +74,13 @@
                                 <div class="container auth-area" id="anonymous-authentication">
                                     <div class="text-center">
                                         <h1>Smart-ID</h1>
-                                        <a th:href="@{/dynamic-link/start-authentication}" class="btn btn-primary">Authenticate</a>
+                                        <a th:href="@{/device-link/start-authentication}" class="btn btn-primary">Authenticate</a>
                                     </div>
                                 </div>
 
                                 <div class="container d-none auth-area" id="dynamic-link-person-code-authentication">
                                     <form method="POST"
-                                          th:action="@{/dynamic-link/start-authentication-with-person-code}"
+                                          th:action="@{/device-link/start-authentication-with-person-code}"
                                           th:object="${userRequest}"
                                           class="form-action">
                                         <div class="text-center">
@@ -116,7 +116,7 @@
 
                                 <div class="container d-none auth-area" id="dynamic-link-document-number-authentication">
                                     <form method="POST"
-                                          th:action="@{/dynamic-link/start-authentication-with-document-number}"
+                                          th:action="@{/device-link/start-authentication-with-document-number}"
                                           th:object="${userDocumentNumberRequest}"
                                           class="form-action">
                                         <div class="text-center">
@@ -236,7 +236,7 @@
                                 <div class="container certification-choice-area" id="anonymous-certificate-choice">
                                     <div class="text-center">
                                         <h1>Smart-ID</h1>
-                                        <a th:href="@{/dynamic-link/start-certificate-choice}" class="btn btn-primary">Certificate choice</a>
+                                        <a th:href="@{/templates/device-link/start-certificate-choice}" class="btn btn-primary">Certificate choice</a>
                                         <p class="text-danger"> Anonymous certificate choice uses dummy data to generate dynamic links and QR codes.
                                             At this moment, no sessions are being created.
                                         </p>
@@ -345,7 +345,7 @@
                             <div class="container h-100 d-flex align-items-center justify-content-center content-area w-100">
                                 <div class="container signing-area" id="dynamic-link-signing-with-document-number">
                                     <form method="POST"
-                                          th:action="@{/dynamic-link/start-signing-with-document-number}"
+                                          th:action="@{/templates/device-link/start-signing-with-document-number}"
                                           th:object="${userDocumentNumberRequest}"
                                           class="form-action"
                                           enctype="multipart/form-data">
@@ -374,7 +374,7 @@
                                 </div>
                                 <div class="container d-none signing-area" id="dynamic-link-signing-with-person-code">
                                     <form method="POST"
-                                          th:action="@{/dynamic-link/start-signing-with-person-code}"
+                                          th:action="@{/templates/device-link/start-signing-with-person-code}"
                                           th:object="${userRequest}"
                                           class="form-action"
                                           enctype="multipart/form-data">

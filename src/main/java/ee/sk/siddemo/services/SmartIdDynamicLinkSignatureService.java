@@ -48,14 +48,14 @@ import ee.sk.siddemo.model.UserRequest;
 import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
 import ee.sk.smartid.exception.useraction.SessionTimeoutException;
 import ee.sk.smartid.exception.useraction.UserRefusedException;
+import ee.sk.smartid.rest.dao.DeviceLinkInteraction;
+import ee.sk.smartid.rest.dao.DeviceLinkSessionResponse;
 import ee.sk.smartid.rest.dao.SemanticsIdentifier;
 import ee.sk.smartid.CertificateChoiceResponse;
 import ee.sk.smartid.CertificateLevel;
 import ee.sk.smartid.SignableData;
 import ee.sk.smartid.SignatureResponseMapper;
 import ee.sk.smartid.SmartIdClient;
-import ee.sk.smartid.rest.dao.DynamicLinkInteraction;
-import ee.sk.smartid.rest.dao.DynamicLinkSessionResponse;
 import ee.sk.smartid.rest.dao.SessionStatus;
 import jakarta.servlet.http.HttpSession;
 
@@ -80,10 +80,10 @@ public class SmartIdDynamicLinkSignatureService {
         var signatureCertificateLevel = CertificateLevel.QUALIFIED;
         notificationCertificateChoiceService.startCertificateChoice(session, userDocumentNumberRequest, signatureCertificateLevel);
         var signableData = toSignableData(userDocumentNumberRequest.getFile(), session);
-        DynamicLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
+        DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
-                .withAllowedInteractionsOrder(List.of(DynamicLinkInteraction.displayTextAndPIN("Sign the document!")))
+                .withAllowedInteractionsOrder(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
                 .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
                 .initSignatureSession();
 
@@ -96,11 +96,11 @@ public class SmartIdDynamicLinkSignatureService {
         notificationCertificateChoiceService.startCertificateChoice(session, userRequest, signatureCertificateLevel);
         var signableData = toSignableData(userRequest.getFile(), session);
         var semanticsIdentifier = new SemanticsIdentifier(SemanticsIdentifier.IdentityType.PNO, userRequest.getCountry(), userRequest.getNationalIdentityNumber());
-        DynamicLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
+        DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
                 .withSemanticsIdentifier(semanticsIdentifier)
-                .withAllowedInteractionsOrder(List.of(DynamicLinkInteraction.displayTextAndPIN("Sign the document!")))
+                .withAllowedInteractionsOrder(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
                 .initSignatureSession();
 
         saveToSession(session, signatureCertificateLevel, sessionResponse, sessionResponse.getReceivedAt());
@@ -176,7 +176,7 @@ public class SmartIdDynamicLinkSignatureService {
 
     private static void saveToSession(HttpSession session,
                                       CertificateLevel requestedCertificateLevel,
-                                      DynamicLinkSessionResponse sessionResponse,
+                                      DeviceLinkSessionResponse sessionResponse,
                                       Instant responseReceivedTime) {
         session.setAttribute("signatureCertificateLevel", requestedCertificateLevel);
         session.setAttribute("sessionSecret", sessionResponse.getSessionSecret());

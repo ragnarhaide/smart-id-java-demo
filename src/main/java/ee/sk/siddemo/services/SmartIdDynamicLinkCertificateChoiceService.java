@@ -37,7 +37,7 @@ import ee.sk.smartid.exception.useraction.SessionTimeoutException;
 import ee.sk.smartid.exception.useraction.UserRefusedException;
 import ee.sk.smartid.ErrorResultHandler;
 import ee.sk.smartid.SmartIdClient;
-import ee.sk.smartid.rest.dao.DynamicLinkSessionResponse;
+import ee.sk.smartid.rest.dao.DeviceLinkSessionResponse;
 import ee.sk.smartid.rest.dao.SessionResult;
 import ee.sk.smartid.rest.dao.SessionStatus;
 import jakarta.servlet.http.HttpSession;
@@ -62,7 +62,7 @@ public class SmartIdDynamicLinkCertificateChoiceService {
 //                .withCertificateLevel(CertificateLevel.QUALIFIED)
 //                .withShareMdClientIpAddress(true)
 //                .initCertificateChoice();
-        DynamicLinkSessionResponse response = new DynamicLinkSessionResponse();
+        DeviceLinkSessionResponse response = new DeviceLinkSessionResponse();
         response.setSessionID("fake-session-id");
         response.setSessionToken("fake-token");
         response.setSessionSecret(Base64.encodeBase64String("fake-secret".getBytes(StandardCharsets.UTF_8)));

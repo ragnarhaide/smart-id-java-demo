@@ -42,34 +42,34 @@ import ee.sk.siddemo.model.DynamicContent;
 import ee.sk.siddemo.model.UserDocumentNumberRequest;
 import ee.sk.siddemo.model.UserRequest;
 import ee.sk.siddemo.services.DynamicContentService;
-import ee.sk.siddemo.services.SmartIdDynamicLinkAuthenticationService;
+import ee.sk.siddemo.services.SmartIdDeviceLinkAuthenticationService;
 import ee.sk.smartid.SessionType;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
 @Controller
-public class SmartIdDynamicLinkAuthenticationController {
+public class SmartIdDeviceLinkAuthenticationController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartIdDynamicLinkAuthenticationController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SmartIdDeviceLinkAuthenticationController.class);
 
-    private final SmartIdDynamicLinkAuthenticationService smartIdDynamicLinkAuthenticationService;
+    private final SmartIdDeviceLinkAuthenticationService smartIdDeviceLinkAuthenticationService;
     private final DynamicContentService dynamicContentService;
 
-    public SmartIdDynamicLinkAuthenticationController(SmartIdDynamicLinkAuthenticationService smartIdDynamicLinkAuthenticationService,
-                                                      DynamicContentService dynamicContentService) {
-        this.smartIdDynamicLinkAuthenticationService = smartIdDynamicLinkAuthenticationService;
+    public SmartIdDeviceLinkAuthenticationController(SmartIdDeviceLinkAuthenticationService smartIdDeviceLinkAuthenticationService,
+                                                     DynamicContentService dynamicContentService) {
+        this.smartIdDeviceLinkAuthenticationService = smartIdDeviceLinkAuthenticationService;
         this.dynamicContentService = dynamicContentService;
     }
 
-    @GetMapping(value = "/dynamic-link/start-authentication")
+    @GetMapping(value = "/device-link/start-authentication")
     public ModelAndView startAuthentication(ModelMap model, HttpSession session) {
-        smartIdDynamicLinkAuthenticationService.startAuthentication(session);
+        smartIdDeviceLinkAuthenticationService.startAuthentication(session);
         model.addAttribute("activeTab", "rp-api-v3");
-        return new ModelAndView("dynamic-link/authentication", model);
+        return new ModelAndView("device-link/authentication", model);
     }
 
-    @PostMapping(value = "/dynamic-link/start-authentication-with-person-code")
+    @PostMapping(value = "/device-link/start-authentication-with-person-code")
     public ModelAndView startAuthentication(@ModelAttribute("userRequest") @Valid UserRequest userRequest,
                                             ModelMap model,
                                             HttpSession session,
@@ -78,11 +78,11 @@ public class SmartIdDynamicLinkAuthenticationController {
         if (bindingResult.hasErrors()) {
             return new ModelAndView("main", "userRequest", userRequest);
         }
-        smartIdDynamicLinkAuthenticationService.startAuthentication(session, userRequest);
-        return new ModelAndView("dynamic-link/authentication", model);
+        smartIdDeviceLinkAuthenticationService.startAuthentication(session, userRequest);
+        return new ModelAndView("device-link/authentication", model);
     }
 
-    @PostMapping(value = "/dynamic-link/start-authentication-with-document-number")
+    @PostMapping(value = "/device-link/start-authentication-with-document-number")
     public ModelAndView startAuthentication(@ModelAttribute("userDocumentNumberRequest") @Valid UserDocumentNumberRequest userDocumentNumberRequest,
                                             ModelMap model,
                                             HttpSession session,
@@ -91,16 +91,16 @@ public class SmartIdDynamicLinkAuthenticationController {
         if (bindingResult.hasErrors()) {
             return new ModelAndView("main", "userDocumentNumberRequest", userDocumentNumberRequest);
         }
-        smartIdDynamicLinkAuthenticationService.startAuthentication(session, userDocumentNumberRequest);
-        return new ModelAndView("dynamic-link/authentication", model);
+        smartIdDeviceLinkAuthenticationService.startAuthentication(session, userDocumentNumberRequest);
+        return new ModelAndView("device-link/authentication", model);
     }
 
 
-    @GetMapping(value = "/dynamic-link/check-authentication-status")
+    @GetMapping(value = "/device-link/check-authentication-status")
     public ResponseEntity<Map<String, String>> checkAuthenticationStatus(HttpSession session) {
         boolean checkCompleted;
         try {
-            checkCompleted = smartIdDynamicLinkAuthenticationService.checkAuthenticationStatus(session);
+            checkCompleted = smartIdDeviceLinkAuthenticationService.checkAuthenticationStatus(session);
         } catch (SidOperationException ex) {
             logger.error("Error occurred while checking authentication status", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", ex.getMessage()));

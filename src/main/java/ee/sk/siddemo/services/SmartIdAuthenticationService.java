@@ -45,12 +45,12 @@ public class SmartIdAuthenticationService {
     public AuthenticationIdentity authenticate(HttpSession session) {
         // validate sessions status for dynamic link authentication
         AuthenticationResponse response = (AuthenticationResponse) session.getAttribute("authentication_response");
-        String randomChallenge = (String) session.getAttribute("randomChallenge");
+        String rpChallenge = (String) session.getAttribute("randomChallenge");
         AuthenticationCertificateLevel requestedCertificateLevel = (AuthenticationCertificateLevel) session.getAttribute("requestedCertificateLevel");
 
         try {
             // validate and map authentication response to authentication identity
-            AuthenticationIdentity authenticationIdentity = authenticationResponseValidator.toAuthenticationIdentity(response, requestedCertificateLevel, randomChallenge);
+            AuthenticationIdentity authenticationIdentity = authenticationResponseValidator.toAuthenticationIdentity(response, requestedCertificateLevel, rpChallenge);
             // invalidate current session after successful authentication
             session.invalidate();
             return authenticationIdentity;

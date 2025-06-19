@@ -30,13 +30,13 @@ import org.springframework.stereotype.Service;
 import ee.sk.siddemo.exception.SidOperationException;
 import ee.sk.siddemo.model.UserDocumentNumberRequest;
 import ee.sk.siddemo.model.UserRequest;
+import ee.sk.smartid.RpChallengeGenerator;
 import ee.sk.smartid.exception.useraction.SessionTimeoutException;
 import ee.sk.smartid.exception.useraction.UserRefusedException;
 import ee.sk.smartid.exception.useraction.UserSelectedWrongVerificationCodeException;
 import ee.sk.smartid.rest.dao.SemanticsIdentifier;
 import ee.sk.smartid.AuthenticationCertificateLevel;
 import ee.sk.smartid.AuthenticationResponseMapper;
-import ee.sk.smartid.RandomChallenge;
 import ee.sk.smartid.SmartIdClient;
 import ee.sk.smartid.rest.dao.NotificationAuthenticationSessionResponse;
 import ee.sk.smartid.rest.dao.NotificationInteraction;
@@ -60,33 +60,33 @@ public class SmartIdNotificationBasedAuthenticationService {
     public String startAuthenticationWithPersonCode(HttpSession session, UserRequest userRequest) {
         var semanticsIdentifier = new SemanticsIdentifier(SemanticsIdentifier.IdentityType.PNO, userRequest.getCountry(), userRequest.getNationalIdentityNumber());
 
-        String randomChallenge = RandomChallenge.generate();
+        String rpChallenge = RpChallengeGenerator.generate();
         var authenticationCertificateLevel = AuthenticationCertificateLevel.QUALIFIED;
         NotificationAuthenticationSessionResponse sessionResponse = smartIdClient.createNotificationAuthentication()
                 .withSemanticsIdentifier(semanticsIdentifier)
-                .withRandomChallenge(randomChallenge)
+                .withRandomChallenge(rpChallenge)
                 .withCertificateLevel(authenticationCertificateLevel)
                 .withAllowedInteractionsOrder(List.of(NotificationInteraction.verificationCodeChoice(displayText)))
                 .initAuthenticationSession();
 
         session.setAttribute("sessionID", sessionResponse.getSessionID());
-        session.setAttribute("randomChallenge", randomChallenge);
+        session.setAttribute("randomChallenge", rpChallenge);
         session.setAttribute("requestedCertificateLevel", authenticationCertificateLevel);
         return sessionResponse.getVc().getValue();
     }
 
     public String startAuthenticationWithDocumentNumber(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
-        String randomChallenge = RandomChallenge.generate();
+        String rpChallenge = RpChallengeGenerator.generate();
         var requestedCertificateLevel = AuthenticationCertificateLevel.QUALIFIED;
         NotificationAuthenticationSessionResponse sessionResponse = smartIdClient.createNotificationAuthentication()
                 .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
-                .withRandomChallenge(randomChallenge)
+                .withRandomChallenge(rpChallenge)
                 .withCertificateLevel(requestedCertificateLevel)
                 .withAllowedInteractionsOrder(List.of(NotificationInteraction.verificationCodeChoice(displayText)))
                 .initAuthenticationSession();
 
         session.setAttribute("sessionID", sessionResponse.getSessionID());
-        session.setAttribute("randomChallenge", randomChallenge);
+        session.setAttribute("randomChallenge", rpChallenge);
         session.setAttribute("requestedCertificateLevel", requestedCertificateLevel);
         return sessionResponse.getVc().getValue();
     }
