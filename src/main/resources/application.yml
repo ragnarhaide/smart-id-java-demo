@@ -9,7 +9,6 @@ sid:
     relyingPartyName: ${SID_RELYING_PARTY_NAME}
     applicationProviderHost: https://sid.demo.sk.ee/smart-id-rp/v3/
     polling-timeout-in-seconds: 5
-    dynamic-link-url: https://sid.demo.sk.ee/dynamic-link/
     open-socket-timeout-in-seconds: 1
   auth:
     displayText: Log in with Smart-ID demo?

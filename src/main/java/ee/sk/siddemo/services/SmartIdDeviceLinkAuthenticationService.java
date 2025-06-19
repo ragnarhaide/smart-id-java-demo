@@ -46,6 +46,7 @@ import ee.sk.smartid.AuthenticationCertificateLevel;
 import ee.sk.smartid.AuthenticationResponseMapper;
 import ee.sk.smartid.SmartIdClient;
 import ee.sk.smartid.rest.dao.SessionStatus;
+import ee.sk.smartid.util.DeviceLinkUtil;
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -68,17 +69,18 @@ public class SmartIdDeviceLinkAuthenticationService {
     public void startAuthentication(HttpSession session) {
         String rpChallenge = RpChallengeGenerator.generate();
         var authenticationCertificateLevel = AuthenticationCertificateLevel.QUALIFIED;
+        List<DeviceLinkInteraction> interactions = List.of(DeviceLinkInteraction.displayTextAndPIN(displayText));
         DeviceLinkSessionResponse response = smartIdClient.createDeviceLinkAuthentication()
                 .withRpChallenge(rpChallenge)
                 .withCertificateLevel(authenticationCertificateLevel)
                 .withSignatureAlgorithm(SignatureAlgorithm.RSASSA_PSS)
                 .withHashAlgorithm(HashAlgorithm.SHA3_512)
-                .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN(displayText)))
+                .withInteractions(interactions)
                 .withShareMdClientIpAddress(true)
                 .initAuthenticationSession();
         Instant responseReceivedTime = Instant.now();
 
-        updateSession(session, rpChallenge, authenticationCertificateLevel, response, responseReceivedTime);
+        updateSession(session, rpChallenge, authenticationCertificateLevel, response, responseReceivedTime, interactions);
 
         smartIdSessionsStatusService.startPolling(session, response.getSessionID());
     }
@@ -87,6 +89,7 @@ public class SmartIdDeviceLinkAuthenticationService {
         String rpChallenge = RpChallengeGenerator.generate();
         var semanticsIdentifier = new SemanticsIdentifier(SemanticsIdentifier.IdentityType.PNO, userRequest.getCountry(), userRequest.getNationalIdentityNumber());
         var requestedCertificateLevel = AuthenticationCertificateLevel.QUALIFIED;
+        List<DeviceLinkInteraction> interactions = List.of(DeviceLinkInteraction.displayTextAndPIN(displayText));
         DeviceLinkSessionResponse response = smartIdClient.createDeviceLinkAuthentication()
                 .withRpChallenge(rpChallenge)
                 .withSemanticsIdentifier(semanticsIdentifier)
@@ -95,10 +98,11 @@ public class SmartIdDeviceLinkAuthenticationService {
                 .withHashAlgorithm(HashAlgorithm.SHA3_512)
                 .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN(displayText)))
                 .withShareMdClientIpAddress(true)
+                .withInteractions(interactions)
                 .initAuthenticationSession();
         Instant responseReceivedTime = Instant.now();
 
-        updateSession(session, rpChallenge, requestedCertificateLevel, response, responseReceivedTime);
+        updateSession(session, rpChallenge, requestedCertificateLevel, response, responseReceivedTime, interactions);
 
         smartIdSessionsStatusService.startPolling(session, response.getSessionID());
     }
@@ -106,6 +110,7 @@ public class SmartIdDeviceLinkAuthenticationService {
     public void startAuthentication(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
         String rpChallenge = RpChallengeGenerator.generate();
         var requestedCertificateLevel = AuthenticationCertificateLevel.QUALIFIED;
+        List<DeviceLinkInteraction> interactions = List.of(DeviceLinkInteraction.displayTextAndPIN(displayText));
         DeviceLinkSessionResponse response = smartIdClient.createDeviceLinkAuthentication()
                 .withRpChallenge(rpChallenge)
                 .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
@@ -114,10 +119,11 @@ public class SmartIdDeviceLinkAuthenticationService {
                 .withHashAlgorithm(HashAlgorithm.SHA_512)
                 .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN(displayText)))
                 .withShareMdClientIpAddress(true)
+                .withInteractions(interactions)
                 .initAuthenticationSession();
         Instant responseReceivedTime = Instant.now();
 
-        updateSession(session, rpChallenge, requestedCertificateLevel, response, responseReceivedTime);
+        updateSession(session, rpChallenge, requestedCertificateLevel, response, responseReceivedTime, interactions);
 
         smartIdSessionsStatusService.startPolling(session, response.getSessionID());
     }
@@ -141,7 +147,8 @@ public class SmartIdDeviceLinkAuthenticationService {
                                       String rpChallenge,
                                       AuthenticationCertificateLevel certificateLevel,
                                       DeviceLinkSessionResponse response,
-                                      Instant responseReceivedTime) {
+                                      Instant responseReceivedTime,
+                                      List<DeviceLinkInteraction> interactions) {
         session.setAttribute("rpChallenge", rpChallenge);
         session.setAttribute("requestedCertificateLevel", certificateLevel);
         session.setAttribute("sessionSecret", response.getSessionSecret());
@@ -149,11 +156,12 @@ public class SmartIdDeviceLinkAuthenticationService {
         session.setAttribute("sessionID", response.getSessionID());
         session.setAttribute("deviceLinkBase", response.getDeviceLinkBase().toString());
         session.setAttribute("responseReceivedTime", responseReceivedTime);
+        session.setAttribute("interactions", DeviceLinkUtil.encodeToBase64(interactions));
     }
 
     private static void saveValidateResponse(HttpSession session, SessionStatus status) {
         try {
-            // validate sessions status for dynamic link authentication
+            // validate sessions status for device link authentication
             var deviceLinkAuthenticationResponse = AuthenticationResponseMapper.from(status);
             session.setAttribute("authentication_response", deviceLinkAuthenticationResponse);
         } catch (SessionTimeoutException | UserRefusedException ex) {

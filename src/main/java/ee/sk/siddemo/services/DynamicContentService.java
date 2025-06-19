@@ -28,7 +28,6 @@ import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ee.sk.siddemo.model.DynamicContent;
@@ -44,9 +43,6 @@ public class DynamicContentService {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicContentService.class);
 
-    @Value("${sid.client.dynamic-link-url}")
-    private String dynamicLinkUrl;
-
     public final SmartIdClient smartIdClient;
 
     public DynamicContentService(SmartIdClient smartIdClient) {
@@ -59,11 +55,12 @@ public class DynamicContentService {
         String deviceLinkBase = (String) session.getAttribute("deviceLinkBase");
         Instant responseReceivedTime = (Instant) session.getAttribute("responseReceivedTime");
         String digest = (String) session.getAttribute("rpChallenge");
+        String interactions = (String) session.getAttribute("interactions");
 
-        return getDynamicContent(sessionType, sessionToken, sessionSecret, deviceLinkBase, responseReceivedTime, digest);
+        return getDynamicContent(sessionType, sessionToken, sessionSecret, deviceLinkBase, responseReceivedTime, digest, interactions);
     }
 
-    public DynamicContent getDynamicContent(SessionType sessionType, String sessionToken, String sessionSecret, String deviceLinkBase, Instant responseReceivedTime, String digest) {
+    public DynamicContent getDynamicContent(SessionType sessionType, String sessionToken, String sessionSecret, String deviceLinkBase, Instant responseReceivedTime, String digest, String interactions) {
         long elapsedSeconds = Duration.between(responseReceivedTime, java.time.Instant.now()).getSeconds();
         logger.info("Dynamic content elapsed seconds: {}", elapsedSeconds);
 
@@ -77,6 +74,7 @@ public class DynamicContentService {
                 .withLang("eng")
                 .withInitialCallbackUrl("https://localhost:8080/callback")
                 .withRelyingPartyName(relyingPartyName)
+                .withInteractions(interactions)
                 .withDigest(digest)
                 .buildDeviceLink(sessionSecret);
 
@@ -88,6 +86,7 @@ public class DynamicContentService {
                 .withLang("eng")
                 .withElapsedSeconds(elapsedSeconds)
                 .withRelyingPartyName(relyingPartyName)
+                .withInteractions(interactions)
                 .withDigest(digest)
                 .buildDeviceLink(sessionSecret);
 
