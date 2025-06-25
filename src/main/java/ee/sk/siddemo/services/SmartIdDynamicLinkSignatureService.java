@@ -48,6 +48,7 @@ import ee.sk.siddemo.model.UserRequest;
 import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
 import ee.sk.smartid.exception.useraction.SessionTimeoutException;
 import ee.sk.smartid.exception.useraction.UserRefusedException;
+import ee.sk.smartid.rest.dao.CertificateByDocumentNumberResult;
 import ee.sk.smartid.rest.dao.DeviceLinkInteraction;
 import ee.sk.smartid.rest.dao.DeviceLinkSessionResponse;
 import ee.sk.smartid.rest.dao.SemanticsIdentifier;
@@ -78,7 +79,15 @@ public class SmartIdDynamicLinkSignatureService {
 
     public void startSigningWithDocumentNumber(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
         var signatureCertificateLevel = CertificateLevel.QUALIFIED;
-        notificationCertificateChoiceService.startCertificateChoice(session, userDocumentNumberRequest, signatureCertificateLevel);
+        CertificateByDocumentNumberResult certificateChoiceResponse = smartIdClient
+                .createCertificateByDocumentNumber()
+                .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
+                .withCertificateLevel(signatureCertificateLevel)
+                .getCertificateByDocumentNumber();
+
+        X509Certificate certificate = certificateChoiceResponse.certificate();
+        session.setAttribute("cert", certificate);
+
         var signableData = toSignableData(userDocumentNumberRequest.getFile(), session);
         DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
@@ -150,12 +159,18 @@ public class SmartIdDynamicLinkSignatureService {
     }
 
     private X509Certificate getX509Certificate(HttpSession session) {
+        Object cert = session.getAttribute("cert");
+
+        if (cert instanceof X509Certificate x509Cert) {
+            return x509Cert;
+        }
         Optional<SessionStatus> certSessionStatus;
         do {
             certSessionStatus = getCertificateChoiceSessionStatus(session);
         } while (certSessionStatus.isEmpty());
 
-        CertificateChoiceResponse certificateChoiceResponse = notificationCertificateChoiceService.getCertificateChoice(session, certSessionStatus.get());
+        CertificateChoiceResponse certificateChoiceResponse =
+                notificationCertificateChoiceService.getCertificateChoice(session, certSessionStatus.get());
         return certificateChoiceResponse.getCertificate();
     }
 

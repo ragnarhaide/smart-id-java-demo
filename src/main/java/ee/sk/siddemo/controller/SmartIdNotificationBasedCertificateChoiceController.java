@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import ee.sk.siddemo.exception.SidOperationException;
-import ee.sk.siddemo.model.UserDocumentNumberRequest;
 import ee.sk.siddemo.model.UserRequest;
 import ee.sk.siddemo.services.SmartIdNotificationBasedCertificateChoiceService;
 import ee.sk.siddemo.services.SmartIdSessionsStatusService;
@@ -68,19 +67,6 @@ public class SmartIdNotificationBasedCertificateChoiceController {
             return new ModelAndView("main", "userRequest", userRequest);
         }
         smartIdNotificationBasedCertificateChoiceService.startCertificateChoice(session, userRequest);
-        model.addAttribute("activeTab", "rp-api-v3");
-        return new ModelAndView("notification-based/certificate-choice", model);
-    }
-
-    @PostMapping(value = "/notification-based/start-certificate-choice-with-document-number")
-    public ModelAndView startNotificationCertificateChoiceWithDocumentNumber(ModelMap model,
-                                                                             HttpSession session,
-                                                                             @ModelAttribute("userDocumentNumberRequest") @Valid UserDocumentNumberRequest userDocumentNumberRequest,
-                                                                             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ModelAndView("main", "userDocumentNumberRequest", userDocumentNumberRequest);
-        }
-        smartIdNotificationBasedCertificateChoiceService.startCertificateChoice(session, userDocumentNumberRequest);
         model.addAttribute("activeTab", "rp-api-v3");
         return new ModelAndView("notification-based/certificate-choice", model);
     }

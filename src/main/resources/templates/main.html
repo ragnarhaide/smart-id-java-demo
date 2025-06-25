@@ -223,10 +223,14 @@
                                    class="btn btn-outline-dark w-100 mb-1 certification-choice-btn"
                                    id="person-code-certificate-choice-btn"
                                    aria-controls="person-code-certificate-choice">Certificate choice with person code</a>
+                            </div>
+
+                            <h5 class="text-uppercase fw-bold mt-4 mb-2">Query Certificate</h5>
+                            <div class="ms-3">
                                 <a href="#"
                                    class="btn btn-outline-dark w-100 mb-1 certification-choice-btn"
-                                   id="document-number-certificate-choice-btn"
-                                   aria-controls="document-number-certificate-choice">Certificate choice with document number</a>
+                                   id="querying-certificate-choice-btn"
+                                   aria-controls="querying-certificate-choice">Query certificate with document number</a>
                             </div>
                         </div>
 
@@ -282,21 +286,24 @@
                                         </div>
                                     </form>
                                 </div>
-
-                                <div class="container d-none certification-choice-area" id="document-number-certificate-choice">
+                                <div class="container d-none certification-choice-area" id="querying-certificate-choice">
                                     <form method="POST"
-                                          th:action="@{/notification-based/start-certificate-choice-with-document-number}"
+                                          th:action="@{/certificate-by-document-number}"
                                           th:object="${userDocumentNumberRequest}"
                                           class="form-action">
                                         <div class="text-center">
                                             <h1>Smart-ID</h1>
+                                            <p class="text-danger">
+                                                Query certificate with document number uses dummy data for testing purposes.
+                                                At this moment, certificate-choice-by-document-number endpoint is not supported by Smart-ID demo environment.
+                                            </p>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="notification-cert-choice-document-number"> Document number</label>
+                                            <label for="querying-cert-choice-document-number"> Document number</label>
                                             <input th:field="*{documentNumber}"
                                                    type="text"
-                                                   id="notification-cert-choice-document-number"
+                                                   id="querying-cert-choice-document-number"
                                                    class="form-control"
                                                    placeholder="Enter document number">
                                         </div>

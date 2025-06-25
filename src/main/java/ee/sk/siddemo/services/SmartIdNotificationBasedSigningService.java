@@ -75,7 +75,15 @@ public class SmartIdNotificationBasedSigningService {
 
     public String startSigningWithDocumentNumber(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
         var signatureCertificateLevel = CertificateLevel.QUALIFIED;
-        notificationCertificateChoiceService.startCertificateChoice(session, userDocumentNumberRequest, signatureCertificateLevel);
+
+        X509Certificate certificate = smartIdClient
+                .createCertificateByDocumentNumber()
+                .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
+                .withCertificateLevel(signatureCertificateLevel)
+                .getCertificateByDocumentNumber()
+                .certificate();
+
+
         var signableData = toSignableData(userDocumentNumberRequest.getFile(), session);
         NotificationSignatureSessionResponse sessionResponse = smartIdClient.createNotificationSignature()
                 .withCertificateLevel(signatureCertificateLevel)
@@ -86,6 +94,7 @@ public class SmartIdNotificationBasedSigningService {
 
         session.setAttribute("sessionID", sessionResponse.getSessionID());
         session.setAttribute("signatureCertificateLevel", signatureCertificateLevel);
+        session.setAttribute("cert", certificate);
         return sessionResponse.getVc().getValue();
     }
 
@@ -136,15 +145,20 @@ public class SmartIdNotificationBasedSigningService {
                 .build();
     }
 
-    private X509Certificate getCertificate(HttpSession httpSession) {
+    private X509Certificate getCertificate(HttpSession session) {
+        X509Certificate cert = (X509Certificate) session.getAttribute("cert");
+        if (cert != null) {
+            return cert;
+        }
         Optional<SessionStatus> certSessionStatus;
         do {
-            certSessionStatus = getCertificateChoiceSessionStatus(httpSession);
+            certSessionStatus = getCertificateChoiceSessionStatus(session);
         } while (certSessionStatus.isEmpty());
 
-        CertificateChoiceResponse certificateChoiceResponse = notificationCertificateChoiceService.getCertificateChoice(httpSession, certSessionStatus.get());
+        CertificateChoiceResponse certificateChoiceResponse = notificationCertificateChoiceService.getCertificateChoice(session, certSessionStatus.get());
         return certificateChoiceResponse.getCertificate();
     }
+
 
     private Optional<SessionStatus> getCertificateChoiceSessionStatus(HttpSession session) {
         Optional<SessionStatus> certSessionStatus;

@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import ee.sk.siddemo.exception.SidOperationException;
-import ee.sk.siddemo.model.UserDocumentNumberRequest;
 import ee.sk.siddemo.model.UserRequest;
 import ee.sk.smartid.exception.permanent.SmartIdClientException;
 import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
@@ -72,22 +71,6 @@ public class SmartIdNotificationBasedCertificateChoiceService {
         NotificationCertificateChoiceSessionResponse response = smartIdClient.createNotificationCertificateChoice()
                 .withCertificateLevel(certificateLevel)
                 .withSemanticsIdentifier(semanticsIdentifier)
-                .initCertificateChoice();
-
-        session.setAttribute("certificateChoiceCertificateLevel", certificateLevel);
-        smartIdSessionsStatusService.startPolling(session, response.getSessionID());
-    }
-
-    public void startCertificateChoice(HttpSession session, @Valid UserDocumentNumberRequest userDocumentNumberRequest) {
-        startCertificateChoice(session, userDocumentNumberRequest, CertificateLevel.QSCD);
-    }
-
-    public void startCertificateChoice(HttpSession session,
-                                       UserDocumentNumberRequest userDocumentNumberRequest,
-                                       CertificateLevel certificateLevel) {
-        NotificationCertificateChoiceSessionResponse response = smartIdClient.createNotificationCertificateChoice()
-                .withCertificateLevel(certificateLevel)
-                .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
                 .initCertificateChoice();
 
         session.setAttribute("certificateChoiceCertificateLevel", certificateLevel);
