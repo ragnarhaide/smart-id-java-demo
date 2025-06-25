@@ -22,8 +22,9 @@ package ee.sk.siddemo.controller;
  * #L%
  */
 
+import ee.sk.smartid.CertificateLevel;
 import ee.sk.smartid.rest.dao.CertificateByDocumentNumberResult;
-import ee.sk.siddemo.services.SmartIdCertificateChoiceByDocumentNumberService;
+import ee.sk.siddemo.services.SmartIdCertificateByDocumentNumberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -35,26 +36,26 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/certificate-by-document-number")
-public class SmartIdCertificateChoiceByDocumentNumberController {
+public class SmartIdCertificateByDocumentNumberController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartIdCertificateChoiceByDocumentNumberController.class);
-    private final SmartIdCertificateChoiceByDocumentNumberService certificateService;
+    private static final Logger logger = LoggerFactory.getLogger(SmartIdCertificateByDocumentNumberController.class);
+    private final SmartIdCertificateByDocumentNumberService certificateService;
 
-    public SmartIdCertificateChoiceByDocumentNumberController(SmartIdCertificateChoiceByDocumentNumberService certificateService) {
+    public SmartIdCertificateByDocumentNumberController(SmartIdCertificateByDocumentNumberService certificateService) {
         this.certificateService = certificateService;
     }
 
     @PostMapping
-    public String startCertificateChoice(@RequestParam("documentNumber") String documentNumber,
-                                         Model model,
-                                         RedirectAttributes redirectAttributes) {
+    public String startCertificate(@RequestParam("documentNumber") String documentNumber,
+                                   Model model,
+                                   RedirectAttributes redirectAttributes) {
         try {
             CertificateByDocumentNumberResult result = certificateService.getCertificate(documentNumber);
             model.addAttribute("documentNumber", documentNumber);
             model.addAttribute("certificate", result.certificate());
-            model.addAttribute("certificateLevel", result.certificateLevel().name());
+            model.addAttribute("certificateLevel", result.certificateLevel());
             model.addAttribute("distinguishedName", result.certificate().getSubjectX500Principal().getName());
-            return "certificate-choice-by-document-number-result";
+            return "certificate-by-document-number-result";
         } catch (Exception e) {
             logger.error("Certificate choice failed for documentNumber {}", documentNumber, e);
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
