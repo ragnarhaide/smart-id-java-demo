@@ -79,6 +79,7 @@ public class DynamicContentService {
                 .buildDeviceLink(sessionSecret);
 
         URI qrLink = new DeviceLinkBuilder()
+                .withSchemeName("smart-id-demo")
                 .withDeviceLinkBase(deviceLinkBase)
                 .withDeviceLinkType(DeviceLinkType.QR_CODE)
                 .withSessionType(sessionType)
