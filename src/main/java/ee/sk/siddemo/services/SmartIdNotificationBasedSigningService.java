@@ -84,7 +84,7 @@ public class SmartIdNotificationBasedSigningService {
                 .certificate();
 
 
-        var signableData = toSignableData(userDocumentNumberRequest.getFile(), session);
+        SignableData signableData = toSignableData(userDocumentNumberRequest.getFile(), certificate, session);
         NotificationSignatureSessionResponse sessionResponse = smartIdClient.createNotificationSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
@@ -94,7 +94,6 @@ public class SmartIdNotificationBasedSigningService {
 
         session.setAttribute("sessionID", sessionResponse.getSessionID());
         session.setAttribute("signatureCertificateLevel", signatureCertificateLevel);
-        session.setAttribute("cert", certificate);
         return sessionResponse.getVc().getValue();
     }
 
@@ -125,13 +124,16 @@ public class SmartIdNotificationBasedSigningService {
     }
 
     private SignableData toSignableData(MultipartFile uploadedFile, HttpSession session) {
+        return toSignableData(uploadedFile, getCertificate(session), session);
+    }
+
+    private SignableData toSignableData(MultipartFile uploadedFile, X509Certificate certificate, HttpSession session) {
         Container container = toContainer(uploadedFile);
-        X509Certificate certificate = getCertificate(session);
         DataToSign dataToSign = toDataToSign(container, certificate);
         saveSigningAttributes(session, dataToSign, container);
 
         SignableData signableData = new SignableData(dataToSign.getDataToSign());
-        signableData.setHashType(HashType.SHA256); // has to match SignatureDigestAlgorithm used in dataToSign
+        signableData.setHashType(HashType.SHA256);  // has to match SignatureDigestAlgorithm used in dataToSign
         return signableData;
     }
 
@@ -146,10 +148,6 @@ public class SmartIdNotificationBasedSigningService {
     }
 
     private X509Certificate getCertificate(HttpSession session) {
-        X509Certificate cert = (X509Certificate) session.getAttribute("cert");
-        if (cert != null) {
-            return cert;
-        }
         Optional<SessionStatus> certSessionStatus;
         do {
             certSessionStatus = getCertificateChoiceSessionStatus(session);
@@ -158,7 +156,6 @@ public class SmartIdNotificationBasedSigningService {
         CertificateChoiceResponse certificateChoiceResponse = notificationCertificateChoiceService.getCertificateChoice(session, certSessionStatus.get());
         return certificateChoiceResponse.getCertificate();
     }
-
 
     private Optional<SessionStatus> getCertificateChoiceSessionStatus(HttpSession session) {
         Optional<SessionStatus> certSessionStatus;

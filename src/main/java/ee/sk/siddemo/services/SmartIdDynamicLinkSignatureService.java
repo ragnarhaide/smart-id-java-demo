@@ -85,10 +85,7 @@ public class SmartIdDynamicLinkSignatureService {
                 .withCertificateLevel(signatureCertificateLevel)
                 .getCertificateByDocumentNumber();
 
-        X509Certificate certificate = certificateChoiceResponse.certificate();
-        session.setAttribute("cert", certificate);
-
-        var signableData = toSignableData(userDocumentNumberRequest.getFile(), session);
+        SignableData signableData = toSignableData(userDocumentNumberRequest.getFile(), certificateChoiceResponse.certificate(), session);
         DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
@@ -131,13 +128,15 @@ public class SmartIdDynamicLinkSignatureService {
                 .orElse(false);
     }
 
-    private SignableData toSignableData(MultipartFile file,
-                                        HttpSession session) {
+    private SignableData toSignableData(MultipartFile file, X509Certificate certificate, HttpSession session) {
         Container container = toContainer(file);
-        X509Certificate certificate = getX509Certificate(session);
         DataToSign dataToSign = toDataToSign(container, certificate);
         saveSigningAttributes(session, container, dataToSign);
         return new SignableData(dataToSign.getDataToSign());
+    }
+
+    private SignableData toSignableData(MultipartFile file, HttpSession session) {
+        return toSignableData(file, getX509Certificate(session), session);
     }
 
     private Container toContainer(MultipartFile file) {
@@ -159,11 +158,6 @@ public class SmartIdDynamicLinkSignatureService {
     }
 
     private X509Certificate getX509Certificate(HttpSession session) {
-        Object cert = session.getAttribute("cert");
-
-        if (cert instanceof X509Certificate x509Cert) {
-            return x509Cert;
-        }
         Optional<SessionStatus> certSessionStatus;
         do {
             certSessionStatus = getCertificateChoiceSessionStatus(session);

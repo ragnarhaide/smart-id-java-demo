@@ -17,14 +17,14 @@
         <h1 class="mb-4">Certificate choice result</h1>
 
         <dl class="row justify-content-center">
-            <dt class="col-sm-4 text-end">Document number:</dt>
-            <dd class="col-sm-6 text-start" th:text="${documentNumber}">[documentNumber]</dd>
+            <dt class="col-sm-4 text-right">Document number:</dt>
+            <dd class="col-sm-6 text-left" th:text="${documentNumber}">[documentNumber]</dd>
 
-            <dt class="col-sm-4 text-end">Distinguished name:</dt>
-            <dd class="col-sm-6 text-start" th:text="${distinguishedName}">[distinguishedName]</dd>
+            <dt class="col-sm-4 text-right">Distinguished name:</dt>
+            <dd class="col-sm-6 text-left" th:text="${distinguishedName}" style="overflow-wrap: break-word;">[distinguishedName]</dd>
 
-            <dt class="col-sm-4 text-end">Certificate level:</dt>
-            <dd class="col-sm-6 text-start" th:text="${certificateLevel}">[certificateLevel]</dd>
+            <dt class="col-sm-4 text-right">Certificate level:</dt>
+            <dd class="col-sm-6 text-left" th:text="${certificateLevel}">[certificateLevel]</dd>
         </dl>
 
         <a href="/" class="btn btn-outline-primary mt-4">Back to home</a>

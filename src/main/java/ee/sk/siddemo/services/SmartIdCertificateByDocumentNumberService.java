@@ -29,7 +29,6 @@ import ee.sk.smartid.exception.useraccount.DocumentUnusableException;
 import ee.sk.smartid.rest.dao.CertificateByDocumentNumberResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,12 +37,6 @@ public class SmartIdCertificateByDocumentNumberService {
     private static final Logger logger = LoggerFactory.getLogger(SmartIdCertificateByDocumentNumberService.class);
 
     private final SmartIdClient smartIdClient;
-
-    @Value("${sid.client.relyingPartyUuid}")
-    private String relyingPartyUUID;
-
-    @Value("${sid.client.relyingPartyName}")
-    private String relyingPartyName;
 
     public SmartIdCertificateByDocumentNumberService(SmartIdClient smartIdClient) {
         this.smartIdClient = smartIdClient;
@@ -54,8 +47,6 @@ public class SmartIdCertificateByDocumentNumberService {
             return smartIdClient
                     .createCertificateByDocumentNumber()
                     .withDocumentNumber(documentNumber)
-                    .withRelyingPartyUUID(relyingPartyUUID)
-                    .withRelyingPartyName(relyingPartyName)
                     .withCertificateLevel(CertificateLevel.QUALIFIED)
                     .getCertificateByDocumentNumber();
         } catch (DocumentUnusableException ex) {
