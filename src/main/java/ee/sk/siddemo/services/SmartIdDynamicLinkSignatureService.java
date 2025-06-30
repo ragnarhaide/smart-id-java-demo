@@ -45,10 +45,10 @@ import ee.sk.siddemo.exception.FileUploadException;
 import ee.sk.siddemo.exception.SidOperationException;
 import ee.sk.siddemo.model.UserDocumentNumberRequest;
 import ee.sk.siddemo.model.UserRequest;
+import ee.sk.smartid.CertificateByDocumentNumberResult;
 import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
 import ee.sk.smartid.exception.useraction.SessionTimeoutException;
 import ee.sk.smartid.exception.useraction.UserRefusedException;
-import ee.sk.smartid.rest.dao.CertificateByDocumentNumberResult;
 import ee.sk.smartid.rest.dao.DeviceLinkInteraction;
 import ee.sk.smartid.rest.dao.DeviceLinkSessionResponse;
 import ee.sk.smartid.rest.dao.SemanticsIdentifier;
@@ -79,13 +79,13 @@ public class SmartIdDynamicLinkSignatureService {
 
     public void startSigningWithDocumentNumber(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
         var signatureCertificateLevel = CertificateLevel.QUALIFIED;
-        CertificateByDocumentNumberResult certificateChoiceResponse = smartIdClient
+        CertificateByDocumentNumberResult certificateByDocumentNumberResult = smartIdClient
                 .createCertificateByDocumentNumber()
                 .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
                 .withCertificateLevel(signatureCertificateLevel)
                 .getCertificateByDocumentNumber();
 
-        SignableData signableData = toSignableData(userDocumentNumberRequest.getFile(), certificateChoiceResponse.certificate(), session);
+        SignableData signableData = toSignableData(userDocumentNumberRequest.getFile(), certificateByDocumentNumberResult.certificate(), session);
         DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)

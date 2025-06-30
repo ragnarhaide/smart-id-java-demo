@@ -23,7 +23,7 @@ package ee.sk.siddemo.controller;
  */
 
 import ee.sk.smartid.CertificateLevel;
-import ee.sk.smartid.rest.dao.CertificateByDocumentNumberResult;
+import ee.sk.smartid.CertificateByDocumentNumberResult;
 import ee.sk.siddemo.services.SmartIdCertificateByDocumentNumberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

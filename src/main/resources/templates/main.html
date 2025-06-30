@@ -228,9 +228,9 @@
                             <h5 class="text-uppercase fw-bold mt-4 mb-2">Query Certificate</h5>
                             <div class="ms-3">
                                 <a href="#"
-                                   class="btn btn-outline-dark w-100 mb-1 certification-choice-btn"
-                                   id="querying-certificate-choice-btn"
-                                   aria-controls="querying-certificate-choice">Query certificate with document number</a>
+                                   class="btn btn-outline-dark w-100 mb-1 certificate-query-btn"
+                                   id="certificate-query-by-document-number-btn"
+                                   aria-controls="certificate-query-by-document-number">Query certificate with document number</a>
                             </div>
                         </div>
 
@@ -286,7 +286,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="container d-none certification-choice-area" id="querying-certificate-choice">
+                                <div class="container d-none certificate-query-area" id="certificate-query-by-document-number">
                                     <form method="POST"
                                           th:action="@{/certificate-by-document-number}"
                                           th:object="${userDocumentNumberRequest}"
@@ -296,10 +296,10 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="querying-document-number"> Document number</label>
+                                            <label for="querying-cert-by-document-number"> Document number</label>
                                             <input th:field="*{documentNumber}"
                                                    type="text"
-                                                   id="querying-document-number"
+                                                   id="querying-cert-by-document-number"
                                                    class="form-control"
                                                    placeholder="Enter document number">
                                         </div>
@@ -553,7 +553,7 @@
     }
 
     connectButtonClickToArea('.auth-btn', '.auth-area');
-    connectButtonClickToArea('.certification-choice-btn', '.certification-choice-area');
+    connectButtonClickToArea('.certification-choice-btn, .certificate-query-btn', '.certification-choice-area, .certificate-query-area');
     connectButtonClickToArea('.signing-btn', '.signing-area');
 
     // open last active tab

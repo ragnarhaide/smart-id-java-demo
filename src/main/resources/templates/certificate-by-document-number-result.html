@@ -14,14 +14,14 @@
 
 <div class="container-fluid d-flex flex-column align-items-center justify-content-center vh-100">
     <div class="container text-center">
-        <h1 class="mb-4">Certificate choice result</h1>
+        <h1 class="mb-4">Certificate query result</h1>
 
         <dl class="row justify-content-center">
             <dt class="col-sm-4 text-right">Document number:</dt>
             <dd class="col-sm-6 text-left" th:text="${documentNumber}">[documentNumber]</dd>
 
             <dt class="col-sm-4 text-right">Distinguished name:</dt>
-            <dd class="col-sm-6 text-left" th:text="${distinguishedName}" style="overflow-wrap: break-word;">[distinguishedName]</dd>
+            <dd class="col-sm-6 text-left break-word" th:text="${distinguishedName}">[distinguishedName]</dd>
 
             <dt class="col-sm-4 text-right">Certificate level:</dt>
             <dd class="col-sm-6 text-left" th:text="${certificateLevel}">[certificateLevel]</dd>

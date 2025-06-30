@@ -22,11 +22,11 @@ package ee.sk.siddemo.services;
  * #L%
  */
 
+import ee.sk.smartid.CertificateByDocumentNumberResult;
 import ee.sk.smartid.CertificateLevel;
 import ee.sk.smartid.SmartIdClient;
 import ee.sk.smartid.exception.permanent.SmartIdClientException;
 import ee.sk.smartid.exception.useraccount.DocumentUnusableException;
-import ee.sk.smartid.rest.dao.CertificateByDocumentNumberResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

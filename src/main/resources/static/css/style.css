@@ -32,3 +32,8 @@ main {
 .view-content {
     max-width: 800px;
 }
+
+.break-word {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
