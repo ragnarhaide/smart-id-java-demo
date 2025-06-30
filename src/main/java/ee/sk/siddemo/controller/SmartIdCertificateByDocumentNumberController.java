@@ -22,23 +22,18 @@ package ee.sk.siddemo.controller;
  * #L%
  */
 
-import ee.sk.smartid.CertificateLevel;
 import ee.sk.smartid.CertificateByDocumentNumberResult;
 import ee.sk.siddemo.services.SmartIdCertificateByDocumentNumberService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/certificate-by-document-number")
 public class SmartIdCertificateByDocumentNumberController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartIdCertificateByDocumentNumberController.class);
     private final SmartIdCertificateByDocumentNumberService certificateService;
 
     public SmartIdCertificateByDocumentNumberController(SmartIdCertificateByDocumentNumberService certificateService) {
@@ -47,19 +42,12 @@ public class SmartIdCertificateByDocumentNumberController {
 
     @PostMapping
     public String startCertificate(@RequestParam("documentNumber") String documentNumber,
-                                   Model model,
-                                   RedirectAttributes redirectAttributes) {
-        try {
+                                   Model model) {
             CertificateByDocumentNumberResult result = certificateService.getCertificate(documentNumber);
             model.addAttribute("documentNumber", documentNumber);
             model.addAttribute("certificate", result.certificate());
             model.addAttribute("certificateLevel", result.certificateLevel());
             model.addAttribute("distinguishedName", result.certificate().getSubjectX500Principal().getName());
             return "certificate-by-document-number-result";
-        } catch (Exception e) {
-            logger.error("Certificate choice failed for documentNumber {}", documentNumber, e);
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/session-error";
-        }
     }
 }
