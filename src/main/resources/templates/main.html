@@ -47,12 +47,12 @@
                                    aria-controls="anonymous-authentication">Anonymous authentication</a>
                                 <a href="#"
                                    class="btn btn-outline-dark w-100 mb-1 auth-btn"
-                                   id="dynamic-link-person-code-authentication-btn"
-                                   aria-controls="dynamic-link-person-code-authentication">Authentication with person code</a>
+                                   id="device-link-person-code-authentication-btn"
+                                   aria-controls="device-link-person-code-authentication">Authentication with person code</a>
                                 <a href="#"
                                    class="btn btn-outline-dark w-100 mb-1 auth-btn"
-                                   id="dynamic-link-document-number-authentication-btn"
-                                   aria-controls="dynamic-link-document-number-authentication">Authentication with document number</a>
+                                   id="device-link-document-number-authentication-btn"
+                                   aria-controls="device-link-document-number-authentication">Authentication with document number</a>
                             </div>
 
                             <h5 class="text-uppercase fw-bold mt-4 mb-2"> Notification </h5>
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
 
-                                <div class="container d-none auth-area" id="dynamic-link-person-code-authentication">
+                                <div class="container d-none auth-area" id="device-link-person-code-authentication">
                                     <form method="POST"
                                           th:action="@{/device-link/start-authentication-with-person-code}"
                                           th:object="${userRequest}"
@@ -114,7 +114,7 @@
                                     </form>
                                 </div>
 
-                                <div class="container d-none auth-area" id="dynamic-link-document-number-authentication">
+                                <div class="container d-none auth-area" id="device-link-document-number-authentication">
                                     <form method="POST"
                                           th:action="@{/device-link/start-authentication-with-document-number}"
                                           th:object="${userDocumentNumberRequest}"
@@ -124,10 +124,10 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="dynamic-link-auth-document-number"> Document number</label>
+                                            <label for="device-link-auth-document-number"> Document number</label>
                                             <input th:field="*{documentNumber}"
                                                    type="text"
-                                                   id="dynamic-link-auth-document-number"
+                                                   id="device-link-auth-document-number"
                                                    class="form-control"
                                                    placeholder="Enter document number">
                                         </div>
@@ -323,12 +323,12 @@
                             <div class="ms-3">
                                 <a href="#"
                                    class="btn btn-outline-dark w-100 mb-1 signing-btn active"
-                                   id="dynamic-link-signing-with-document-number-btn"
-                                   aria-controls="dynamic-link-signing-with-document-number">Sign with document number</a>
+                                   id="device-link-signing-with-document-number-btn"
+                                   aria-controls="device-link-signing-with-document-number">Sign with document number</a>
                                 <a href="#"
                                    class="btn btn-outline-dark w-100 mb-1 signing-btn"
-                                   id="dynamic-link-signing-with-person-code-btn"
-                                   aria-controls="dynamic-link-signing-with-person-code">Sign with person code</a>
+                                   id="device-link-signing-with-person-code-btn"
+                                   aria-controls="device-link-signing-with-person-code">Sign with person code</a>
                             </div>
 
                             <h5 class="text-uppercase fw-bold mt-4 mb-2">Notification</h5>
@@ -346,24 +346,24 @@
                         <!-- Content -->
                         <div class="col-md-8 p-3">
                             <div class="container h-100 d-flex align-items-center justify-content-center content-area w-100">
-                                <div class="container signing-area" id="dynamic-link-signing-with-document-number">
+                                <div class="container signing-area" id="device-link-signing-with-document-number">
                                     <form method="POST"
-                                          th:action="@{/templates/device-link/start-signing-with-document-number}"
+                                          th:action="@{/device-link/start-signing-with-document-number}"
                                           th:object="${userDocumentNumberRequest}"
                                           class="form-action"
                                           enctype="multipart/form-data">
                                         <div class="form-group">
-                                            <label for="dynamic-link-sign-document-number"> Document number</label>
+                                            <label for="device-link-sign-document-number"> Document number</label>
                                             <input th:field="*{documentNumber}"
                                                    type="text"
-                                                   id="dynamic-link-sign-document-number"
+                                                   id="device-link-sign-document-number"
                                                    class="form-control"
                                                    placeholder="Enter document number">
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="dynamic-link-doc-nr-document">Document to sign (max 10 MB)</label>
-                                            <input type="file" th:field="*{file}" id="dynamic-link-doc-nr-document">
+                                            <label for="device-link-doc-nr-document">Document to sign (max 10 MB)</label>
+                                            <input type="file" th:field="*{file}" id="device-link-doc-nr-document">
 
                                             <div th:if="${#fields.hasErrors('file')}" th:errors="*{file}" style="color:red">
                                                 file Error
@@ -375,16 +375,16 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="container d-none signing-area" id="dynamic-link-signing-with-person-code">
+                                <div class="container d-none signing-area" id="device-link-signing-with-person-code">
                                     <form method="POST"
-                                          th:action="@{/templates/device-link/start-signing-with-person-code}"
+                                          th:action="@{/device-link/start-signing-with-person-code}"
                                           th:object="${userRequest}"
                                           class="form-action"
                                           enctype="multipart/form-data">
 
                                         <div class="form-group">
-                                            <label for="dynamic-link-signing-country"> Select country </label>
-                                            <select th:field="*{country}" id="dynamic-link-signing-country" class="form-control" name="country">
+                                            <label for="device-link-signing-country"> Select country </label>
+                                            <select th:field="*{country}" id="device-link-signing-country" class="form-control" name="country">
                                                 <option th:value="'EE'" value="EE">Estonia</option>
                                                 <option th:value="'LV'" value="LV">Latvia</option>
                                                 <option th:value="'LT'" th:text="Lithuania"></option>
@@ -395,17 +395,17 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="dynamic-link-sign-person-code"> Person code</label>
+                                            <label for="device-link-sign-person-code"> Person code</label>
                                             <input th:field="*{nationalIdentityNumber}"
                                                    type="text"
-                                                   id="dynamic-link-sign-person-code"
+                                                   id="device-link-sign-person-code"
                                                    class="form-control"
                                                    placeholder="Enter person code">
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="dynamic-link-person-code-document">Document to sign (max 10 MB)</label>
-                                            <input type="file" th:field="*{file}" id="dynamic-link-person-code-document">
+                                            <label for="device-link-person-code-document">Document to sign (max 10 MB)</label>
+                                            <input type="file" th:field="*{file}" id="device-link-person-code-document">
 
                                             <div th:if="${#fields.hasErrors('file')}" th:errors="*{file}" style="color:red">
                                                 file Error
@@ -439,7 +439,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="dynamic-link-sign-person-code"> Person code</label>
+                                            <label for="device-link-sign-person-code"> Person code</label>
                                             <input th:field="*{nationalIdentityNumber}"
                                                    type="text"
                                                    id="notification-sign-person-code"

@@ -54,7 +54,7 @@ public class DynamicContentService {
         String sessionToken = (String) session.getAttribute("sessionToken");
         String deviceLinkBase = (String) session.getAttribute("deviceLinkBase");
         Instant responseReceivedTime = (Instant) session.getAttribute("responseReceivedTime");
-        String digest = (String) session.getAttribute("rpChallenge");
+        String digest = (String) session.getAttribute("digest");
         String interactions = (String) session.getAttribute("interactions");
 
         return getDynamicContent(sessionType, sessionToken, sessionSecret, deviceLinkBase, responseReceivedTime, digest, interactions);

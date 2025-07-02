@@ -75,7 +75,7 @@
 <script th:src="@{/js/bootstrap.js}"></script>
 <script type="text/javascript">
     function loadContent() {
-        fetch('/dynamic-link/check-signing-status')
+        fetch('/device-link/check-signing-status')
             .then(response => response.json())
             .then(data => {
                 if (data.errorMessage !== undefined) {

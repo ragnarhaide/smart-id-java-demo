@@ -147,7 +147,7 @@ public class SmartIdDeviceLinkAuthenticationService {
                                       DeviceLinkSessionResponse response,
                                       Instant responseReceivedTime,
                                       List<DeviceLinkInteraction> interactions) {
-        session.setAttribute("rpChallenge", rpChallenge);
+        session.setAttribute("digest",      rpChallenge);
         session.setAttribute("requestedCertificateLevel", certificateLevel);
         session.setAttribute("sessionSecret", response.getSessionSecret());
         session.setAttribute("sessionToken", response.getSessionToken());
