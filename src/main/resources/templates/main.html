@@ -404,6 +404,15 @@
                                         </div>
 
                                         <div class="form-group">
+                                            <label for="device-link-sign-document-number">Document number</label>
+                                            <input name="documentNumber"
+                                                   type="text"
+                                                   id="device-link-signature-document-number"
+                                                   class="form-control"
+                                                   placeholder="Enter document number (used for cert lookup)">
+                                        </div>
+
+                                        <div class="form-group">
                                             <label for="device-link-person-code-document">Document to sign (max 10 MB)</label>
                                             <input type="file" th:field="*{file}" id="device-link-person-code-document">
 

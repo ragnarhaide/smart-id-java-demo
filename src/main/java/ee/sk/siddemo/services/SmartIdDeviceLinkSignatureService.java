@@ -108,8 +108,13 @@ public class SmartIdDeviceLinkSignatureService {
 
     public void startSigningWithPersonCode(HttpSession session, UserRequest userRequest) {
         var signatureCertificateLevel = CertificateLevel.QUALIFIED;
-        notificationCertificateChoiceService.startCertificateChoice(session, userRequest, signatureCertificateLevel);
-        var signableData = toSignableData(userRequest.getFile(), session);
+        String documentNumber = (String) session.getAttribute("documentNumber");
+        CertificateByDocumentNumberResult certificateByDocumentNumberResult = smartIdClient
+                .createCertificateByDocumentNumber()
+                .withDocumentNumber(documentNumber)
+                .withCertificateLevel(signatureCertificateLevel)
+                .getCertificateByDocumentNumber();
+        SignableData signableData = toSignableData(userRequest.getFile(), certificateByDocumentNumberResult.certificate(), session);
         var semanticsIdentifier = new SemanticsIdentifier(SemanticsIdentifier.IdentityType.PNO, userRequest.getCountry(), userRequest.getNationalIdentityNumber());
         DeviceLinkSessionResponse sessionResponse = smartIdClient.createDeviceLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)

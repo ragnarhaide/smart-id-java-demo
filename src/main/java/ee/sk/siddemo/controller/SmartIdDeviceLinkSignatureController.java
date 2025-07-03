@@ -35,6 +35,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -86,6 +87,7 @@ public class SmartIdDeviceLinkSignatureController {
 
     @PostMapping(value = "device-link/start-signing-with-person-code")
     public ModelAndView sendDeviceLinkSigningRequestWithPersonCode(@ModelAttribute("userRequest") UserRequest userRequest,
+                                                                   @RequestParam("documentNumber") String documentNumber,
                                                                    BindingResult bindingResult,
                                                                    ModelMap model,
                                                                    RedirectAttributes redirectAttributes,
@@ -101,6 +103,8 @@ public class SmartIdDeviceLinkSignatureController {
             redirectAttributes.addFlashAttribute("userRequest", userRequest);
             return new ModelAndView("redirect:/rp-api-v3");
         }
+        session.setAttribute("documentNumber", documentNumber);
+
         smartIdDeviceLinkSignatureService.startSigningWithPersonCode(session, userRequest);
         return new ModelAndView("device-link/signing", model);
     }
