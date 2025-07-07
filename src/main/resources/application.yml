@@ -19,6 +19,9 @@ sid:
     trusted-root-certs:
       filename: /sid.trusted_root_certs.p12
       password: changeit
+    trust-anchor-certs:
+      filename: /sid_trust_anchor_certificates.jks
+      password: changeit
 
 app:
   signed-files-directory: target/signed-files

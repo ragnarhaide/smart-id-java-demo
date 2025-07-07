@@ -124,7 +124,7 @@ public class SmartIdDynamicLinkCertificateChoiceService {
         try {
             // validate sessions status does not contain errors
             if (!"OK".equals(status.getResult().getEndResult())) {
-                ErrorResultHandler.handle(status.getResult().getEndResult());
+                ErrorResultHandler.handle(status.getResult());
             }
             // TODO - 17.12.24: uncomment when anonymous certificate choice is supported by RP API v3
 //            X509Certificate certificate = CertificateParser.parseX509Certificate(status.getCert().getValue());

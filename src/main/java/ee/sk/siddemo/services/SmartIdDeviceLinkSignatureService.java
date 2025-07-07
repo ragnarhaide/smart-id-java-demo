@@ -103,6 +103,7 @@ public class SmartIdDeviceLinkSignatureService {
                 .initSignatureSession();
 
         saveToSession(session, signatureCertificateLevel, sessionResponse, sessionResponse.getReceivedAt(), signableData);
+        session.setAttribute("sessionInitResponse", sessionResponse);
         sessionsStatusService.startPolling(session, sessionResponse.getSessionID());
     }
 
@@ -127,6 +128,7 @@ public class SmartIdDeviceLinkSignatureService {
                 .initSignatureSession();
 
         saveToSession(session, signatureCertificateLevel, sessionResponse, sessionResponse.getReceivedAt(), signableData);
+        session.setAttribute("sessionInitResponse", sessionResponse);
         sessionsStatusService.startPolling(session, sessionResponse.getSessionID());
     }
 
@@ -211,7 +213,7 @@ public class SmartIdDeviceLinkSignatureService {
         session.setAttribute("sessionID", sessionResponse.getSessionID());
         session.setAttribute("deviceLinkBase", sessionResponse.getDeviceLinkBase().toString());
         session.setAttribute("responseReceivedTime", responseReceivedTime);
-        session.setAttribute("digest", signableData.calculateHashInBase64());
+        session.setAttribute("rpChallenge", signableData.calculateHashInBase64());
         session.setAttribute("interactions", DeviceLinkUtil.encodeToBase64(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!"))));
     }
 
