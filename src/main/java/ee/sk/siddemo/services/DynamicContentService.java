@@ -36,6 +36,7 @@ import ee.sk.smartid.DeviceLinkType;
 import ee.sk.smartid.QrCodeGenerator;
 import ee.sk.smartid.SessionType;
 import ee.sk.smartid.SmartIdClient;
+import ee.sk.smartid.rest.dao.DeviceLinkSessionResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -50,46 +51,46 @@ public class DynamicContentService {
     }
 
     public DynamicContent getDynamicContent(HttpSession session, SessionType sessionType) {
-        String sessionSecret = (String) session.getAttribute("sessionSecret");
-        String sessionToken = (String) session.getAttribute("sessionToken");
-        String deviceLinkBase = (String) session.getAttribute("deviceLinkBase");
-        Instant responseReceivedTime = (Instant) session.getAttribute("responseReceivedTime");
         String digest = (String) session.getAttribute("rpChallenge");
         String interactions = (String) session.getAttribute("interactions");
-
-        return getDynamicContent(sessionType, sessionToken, sessionSecret, deviceLinkBase, responseReceivedTime, digest, interactions);
+        DeviceLinkSessionResponse sessionInitResponse = (DeviceLinkSessionResponse) session.getAttribute("sessionInitResponse");
+        return getDynamicContent(sessionType, digest, interactions, sessionInitResponse);
     }
 
-    public DynamicContent getDynamicContent(SessionType sessionType, String sessionToken, String sessionSecret, String deviceLinkBase, Instant responseReceivedTime, String digest, String interactions) {
-        long elapsedSeconds = Duration.between(responseReceivedTime, java.time.Instant.now()).getSeconds();
+    public DynamicContent getDynamicContent(SessionType sessionType,
+                                            String digest,
+                                            String interactions,
+                                            DeviceLinkSessionResponse deviceLinkSessionResponse) {
+        long elapsedSeconds = Duration.between(deviceLinkSessionResponse.getReceivedAt(), Instant.now()).getSeconds();
         logger.info("Dynamic content elapsed seconds: {}", elapsedSeconds);
 
         String relyingPartyName = smartIdClient.getRelyingPartyName();
 
         URI dynamicLink = new DeviceLinkBuilder()
-                .withDeviceLinkBase(deviceLinkBase)
+                .withSchemeName("smart-id-demo")
+                .withDeviceLinkBase(deviceLinkSessionResponse.getDeviceLinkBase().toString())
                 .withDeviceLinkType(DeviceLinkType.WEB_2_APP)
                 .withSessionType(sessionType)
-                .withSessionToken(sessionToken)
+                .withSessionToken(deviceLinkSessionResponse.getSessionToken())
                 .withLang("eng")
                 .withInitialCallbackUrl("https://localhost:8080/callback")
                 .withRelyingPartyName(relyingPartyName)
                 .withInteractions(interactions)
                 .withDigest(digest)
-                .buildDeviceLink(sessionSecret);
+                .buildDeviceLink(deviceLinkSessionResponse.getSessionSecret());
 
         URI qrLink = new DeviceLinkBuilder()
                 .withSchemeName("smart-id-demo")
-                .withDeviceLinkBase(deviceLinkBase)
+                .withDeviceLinkBase(deviceLinkSessionResponse.getDeviceLinkBase().toString())
                 .withDeviceLinkType(DeviceLinkType.QR_CODE)
                 .withSessionType(sessionType)
-                .withSessionToken(sessionToken)
+                .withSessionToken(deviceLinkSessionResponse.getSessionToken())
                 .withLang("eng")
                 .withElapsedSeconds(elapsedSeconds)
                 .withRelyingPartyName(relyingPartyName)
                 .withInteractions(interactions)
                 .withDigest(digest)
-                .buildDeviceLink(sessionSecret);
+                .buildDeviceLink(deviceLinkSessionResponse.getSessionSecret());
 
         String qrDataUri = QrCodeGenerator.generateDataUri(qrLink.toString());
 

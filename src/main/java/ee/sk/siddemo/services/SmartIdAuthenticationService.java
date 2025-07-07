@@ -26,11 +26,12 @@ import org.springframework.stereotype.Service;
 
 import ee.sk.siddemo.exception.SidOperationException;
 import ee.sk.smartid.AuthenticationIdentity;
-import ee.sk.smartid.exception.UnprocessableSmartIdResponseException;
-import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
-import ee.sk.smartid.AuthenticationCertificateLevel;
 import ee.sk.smartid.AuthenticationResponse;
 import ee.sk.smartid.AuthenticationResponseValidator;
+import ee.sk.smartid.exception.UnprocessableSmartIdResponseException;
+import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
+import ee.sk.smartid.rest.dao.AuthenticationSessionRequest;
+import ee.sk.smartid.rest.dao.SessionStatus;
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -44,13 +45,12 @@ public class SmartIdAuthenticationService {
 
     public AuthenticationIdentity authenticate(HttpSession session) {
         // validate sessions status for dynamic link authentication
-        AuthenticationResponse response = (AuthenticationResponse) session.getAttribute("authentication_response");
-        String rpChallenge = (String) session.getAttribute("randomChallenge");
-        AuthenticationCertificateLevel requestedCertificateLevel = (AuthenticationCertificateLevel) session.getAttribute("requestedCertificateLevel");
+        SessionStatus response = (SessionStatus) session.getAttribute("authenticationSessionStatus");
+        AuthenticationSessionRequest request = (AuthenticationSessionRequest) session.getAttribute("authenticationSessionRequest");
 
         try {
             // validate and map authentication response to authentication identity
-            AuthenticationIdentity authenticationIdentity = authenticationResponseValidator.toAuthenticationIdentity(response, requestedCertificateLevel, rpChallenge);
+            AuthenticationIdentity authenticationIdentity = authenticationResponseValidator.validate(response, request, "smart-id-demo");
             // invalidate current session after successful authentication
             session.invalidate();
             return authenticationIdentity;

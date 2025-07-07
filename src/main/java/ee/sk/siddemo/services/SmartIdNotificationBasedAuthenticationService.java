@@ -97,15 +97,6 @@ public class SmartIdNotificationBasedAuthenticationService {
             throw new SidOperationException("Session ID is missing");
         }
         SessionStatus sessionStatus = sessionStatusService.poll(sessionId);
-        saveValidateResponse(session, sessionStatus);
-    }
-
-    private static void saveValidateResponse(HttpSession session, SessionStatus status) {
-        try {
-            var signatureResponse = AuthenticationResponseMapper.from(status);
-            session.setAttribute("authentication_response", signatureResponse);
-        } catch (SessionTimeoutException | UserRefusedException | UserSelectedWrongVerificationCodeException ex) {
-            throw new SidOperationException(ex.getMessage());
-        }
+        session.setAttribute("authenticationSessionStatus", sessionStatus);
     }
 }

@@ -31,7 +31,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import ee.sk.smartid.AuthenticationResponseValidator;
+import ee.sk.smartid.FileTrustedCAStoreBuilder;
 import ee.sk.smartid.SmartIdClient;
+import ee.sk.smartid.TrustedCACertStore;
 
 @Configuration
 public class SmartIdConfig {
@@ -56,6 +58,12 @@ public class SmartIdConfig {
 
     @Value("${sid.client.open-socket-timeout-in-seconds}")
     private Integer sidOpenSocketTimeout;
+
+    @Value("${sid.truststore.trust-anchor-certs.filename}")
+    private String sidTrustAnchorCertsFilename;
+
+    @Value("${sid.truststore.trust-anchor-certs.password}")
+    private String sigTrustAnchorCertsPassword;
 
     @Value("${sid.truststore.trusted-root-certs.filename}")
     private String sidTrustedRootCertsFilename;
@@ -83,6 +91,12 @@ public class SmartIdConfig {
 
     @Bean
     public AuthenticationResponseValidator authenticationResponseValidator() {
-        return new AuthenticationResponseValidator(sidTrustedRootCertsFilename, sidTrustedRootCertsPassword);
+        TrustedCACertStore trustedCACertStore = new FileTrustedCAStoreBuilder()
+                .withTrustAnchorTruststorePath(sidTrustAnchorCertsFilename)
+                .withTrustAnchorTruststorePassword(sigTrustAnchorCertsPassword)
+                .withIntermediateCATruststorePath(sidTrustedRootCertsFilename)
+                .withIntermediateCATruststorePassword(sidTrustedRootCertsPassword)
+                .build();
+        return new AuthenticationResponseValidator(trustedCACertStore);
     }
 }

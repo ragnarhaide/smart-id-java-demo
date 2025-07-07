@@ -86,10 +86,10 @@ public class SmartIdDynamicLinkSignatureService {
                 .getCertificateByDocumentNumber();
 
         SignableData signableData = toSignableData(userDocumentNumberRequest.getFile(), certificateByDocumentNumberResult.certificate(), session);
-        DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
+        DeviceLinkSessionResponse sessionResponse = smartIdClient.createDeviceLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
-                .withAllowedInteractionsOrder(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
+                .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
                 .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
                 .initSignatureSession();
 
@@ -102,11 +102,11 @@ public class SmartIdDynamicLinkSignatureService {
         notificationCertificateChoiceService.startCertificateChoice(session, userRequest, signatureCertificateLevel);
         var signableData = toSignableData(userRequest.getFile(), session);
         var semanticsIdentifier = new SemanticsIdentifier(SemanticsIdentifier.IdentityType.PNO, userRequest.getCountry(), userRequest.getNationalIdentityNumber());
-        DeviceLinkSessionResponse sessionResponse = smartIdClient.createDynamicLinkSignature()
+        DeviceLinkSessionResponse sessionResponse = smartIdClient.createDeviceLinkSignature()
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
                 .withSemanticsIdentifier(semanticsIdentifier)
-                .withAllowedInteractionsOrder(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
+                .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
                 .initSignatureSession();
 
         saveToSession(session, signatureCertificateLevel, sessionResponse, sessionResponse.getReceivedAt());
