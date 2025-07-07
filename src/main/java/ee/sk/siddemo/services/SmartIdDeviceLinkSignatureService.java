@@ -96,7 +96,7 @@ public class SmartIdDeviceLinkSignatureService {
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
                 .withSignatureAlgorithm(SignatureAlgorithm.RSASSA_PSS)
-                .withHashAlgorithm(HashAlgorithm.SHA3_512)
+                .withHashAlgorithm(HashAlgorithm.SHA_512)
                 .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
                 .withDocumentNumber(userDocumentNumberRequest.getDocumentNumber())
                 .withInitialCallbackURL("https://localhost:8080/callback")
@@ -120,6 +120,8 @@ public class SmartIdDeviceLinkSignatureService {
                 .withCertificateLevel(signatureCertificateLevel)
                 .withSignableData(signableData)
                 .withSemanticsIdentifier(semanticsIdentifier)
+                .withSignatureAlgorithm(SignatureAlgorithm.RSASSA_PSS)
+                .withHashAlgorithm(HashAlgorithm.SHA_512)
                 .withInteractions(List.of(DeviceLinkInteraction.displayTextAndPIN("Sign the document!")))
                 .withInitialCallbackURL("https://localhost:8080/callback")
                 .initSignatureSession();
