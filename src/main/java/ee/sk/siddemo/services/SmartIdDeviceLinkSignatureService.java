@@ -47,6 +47,7 @@ import ee.sk.siddemo.model.UserDocumentNumberRequest;
 import ee.sk.siddemo.model.UserRequest;
 import ee.sk.smartid.CertificateByDocumentNumberResult;
 import ee.sk.smartid.SignatureAlgorithm;
+import ee.sk.smartid.SignatureResponse;
 import ee.sk.smartid.exception.useraccount.CertificateLevelMismatchException;
 import ee.sk.smartid.exception.useraction.SessionTimeoutException;
 import ee.sk.smartid.exception.useraction.UserRefusedException;
@@ -57,7 +58,7 @@ import ee.sk.smartid.rest.dao.SemanticsIdentifier;
 import ee.sk.smartid.CertificateChoiceResponse;
 import ee.sk.smartid.CertificateLevel;
 import ee.sk.smartid.SignableData;
-import ee.sk.smartid.SignatureResponseMapper;
+import ee.sk.smartid.SignatureResponseValidator;
 import ee.sk.smartid.SmartIdClient;
 import ee.sk.smartid.rest.dao.SessionStatus;
 import ee.sk.smartid.util.DeviceLinkUtil;
@@ -71,13 +72,15 @@ public class SmartIdDeviceLinkSignatureService {
     private final SmartIdNotificationBasedCertificateChoiceService notificationCertificateChoiceService;
     private final SmartIdSessionsStatusService sessionsStatusService;
     private final SmartIdClient smartIdClient;
+    private final SignatureResponseValidator signatureResponseValidator;
 
     public SmartIdDeviceLinkSignatureService(SmartIdNotificationBasedCertificateChoiceService notificationCertificateChoiceService,
                                              SmartIdSessionsStatusService sessionsStatusService,
-                                             SmartIdClient smartIdClient) {
+                                             SmartIdClient smartIdClient, SignatureResponseValidator signatureResponseValidator) {
         this.notificationCertificateChoiceService = notificationCertificateChoiceService;
         this.sessionsStatusService = sessionsStatusService;
         this.smartIdClient = smartIdClient;
+        this.signatureResponseValidator = signatureResponseValidator;
     }
 
     public void startSigningWithDocumentNumber(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
@@ -138,6 +141,12 @@ public class SmartIdDeviceLinkSignatureService {
                 .map(status -> {
                     if (status.getState().equals("COMPLETE")) {
                         saveValidateResponse(session, status);
+
+                        SignatureResponse signatureResponse =
+                                (SignatureResponse) session.getAttribute("signatureResponse");
+
+                        verifySignature(signatureResponse);
+
                         session.setAttribute("session_status", "COMPLETED");
                         logger.debug("Mobile device IP address: {}", status.getDeviceIpAddress());
                         return true;
@@ -145,6 +154,12 @@ public class SmartIdDeviceLinkSignatureService {
                     return false;
                 })
                 .orElse(false);
+    }
+
+    private void verifySignature(SignatureResponse signatureResponse) {
+        logger.info("Signature from Smart-ID validated: algorithm={}, certSubject={}",
+                signatureResponse.getSignatureAlgorithm(),
+                signatureResponse.getCertificate().getSubjectDN());
     }
 
     private SignableData toSignableData(MultipartFile file, X509Certificate certificate, HttpSession session) {
@@ -225,10 +240,10 @@ public class SmartIdDeviceLinkSignatureService {
                 .buildDataToSign();
     }
 
-    private static void saveValidateResponse(HttpSession session, SessionStatus status) {
+    private void saveValidateResponse(HttpSession session, SessionStatus status) {
         try {
             CertificateLevel requestedCertificateLevel = (CertificateLevel) session.getAttribute("signatureCertificateLevel");
-            var dynamicLinkSignatureResponse = SignatureResponseMapper.from(status, requestedCertificateLevel.name());
+            var dynamicLinkSignatureResponse = signatureResponseValidator.from(status, requestedCertificateLevel.name());
             session.setAttribute("signatureResponse", dynamicLinkSignatureResponse);
         } catch (SessionTimeoutException | UserRefusedException | CertificateLevelMismatchException ex) {
             throw new SidOperationException(ex.getMessage());

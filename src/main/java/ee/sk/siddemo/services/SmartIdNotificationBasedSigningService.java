@@ -50,7 +50,7 @@ import ee.sk.smartid.rest.dao.SemanticsIdentifier;
 import ee.sk.smartid.CertificateChoiceResponse;
 import ee.sk.smartid.CertificateLevel;
 import ee.sk.smartid.SignableData;
-import ee.sk.smartid.SignatureResponseMapper;
+import ee.sk.smartid.SignatureResponseValidator;
 import ee.sk.smartid.SmartIdClient;
 import ee.sk.smartid.rest.dao.NotificationInteraction;
 import ee.sk.smartid.rest.dao.NotificationSignatureSessionResponse;
@@ -63,14 +63,15 @@ public class SmartIdNotificationBasedSigningService {
     private final SmartIdClient smartIdClient;
     private final SmartIdSessionsStatusService sessionStatusService;
     private final SmartIdNotificationBasedCertificateChoiceService notificationCertificateChoiceService;
-
+    private final SignatureResponseValidator signatureResponseValidator;
 
     public SmartIdNotificationBasedSigningService(SmartIdClient smartIdClient,
                                                   SmartIdSessionsStatusService sessionStatusService,
-                                                  SmartIdNotificationBasedCertificateChoiceService notificationCertificateChoiceService) {
+                                                  SmartIdNotificationBasedCertificateChoiceService notificationCertificateChoiceService, SignatureResponseValidator signatureResponseValidator) {
         this.smartIdClient = smartIdClient;
         this.sessionStatusService = sessionStatusService;
         this.notificationCertificateChoiceService = notificationCertificateChoiceService;
+        this.signatureResponseValidator = signatureResponseValidator;
     }
 
     public String startSigningWithDocumentNumber(HttpSession session, UserDocumentNumberRequest userDocumentNumberRequest) {
@@ -189,10 +190,10 @@ public class SmartIdNotificationBasedSigningService {
         session.setAttribute("container", container);
     }
 
-    private static void saveValidateResponse(HttpSession session, SessionStatus status) {
+    private void saveValidateResponse(HttpSession session, SessionStatus status) {
         try {
             CertificateLevel requestedCertificateLevel = (CertificateLevel) session.getAttribute("signatureCertificateLevel");
-            var signatureResponse = SignatureResponseMapper.from(status, requestedCertificateLevel.name());
+            var signatureResponse = signatureResponseValidator.from(status, requestedCertificateLevel.name());
             session.setAttribute("signatureResponse", signatureResponse);
         } catch (SessionTimeoutException | UserRefusedException | CertificateLevelMismatchException | UserSelectedWrongVerificationCodeException ex) {
             throw new SidOperationException(ex.getMessage());

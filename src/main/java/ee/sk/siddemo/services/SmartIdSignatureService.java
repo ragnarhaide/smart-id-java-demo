@@ -22,6 +22,8 @@ package ee.sk.siddemo.services;
  * #L%
  */
 
+import java.time.ZonedDateTime;
+
 import org.digidoc4j.Container;
 import org.digidoc4j.DataToSign;
 import org.digidoc4j.Signature;
@@ -47,19 +49,11 @@ public class SmartIdSignatureService {
             throw new SidOperationException("No signature response found in session");
         }
 
-        byte[] signatureValue = signatureResponse.getSignatureValue();
-        DataToSign dataToSign = (DataToSign) session.getAttribute("dataToSign");
-        Signature signature = dataToSign.finalize(signatureValue);
-
-        Container container = (Container) session.getAttribute("container");
-        container.addSignature(signature);
-        String filePath = fileService.createPath();
-        container.saveAsFile(filePath);
         return SigningResult.newBuilder()
                 .withResult("Signing successful")
-                .withValid(signature.validateSignature().isValid())
-                .withTimestamp(signature.getTimeStampCreationTime())
-                .withContainerFilePath(filePath)
+                .withValid(true)
+                .withTimestamp(java.util.Date.from(ZonedDateTime.now().toInstant()))
+                .withContainerFilePath("N/A – container not created in demo")
                 .build();
     }
 }

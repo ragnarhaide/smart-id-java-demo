@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.digidoc4j</groupId>
             <artifactId>digidoc4j</artifactId>
-            <version>5.3.1</version>
+            <version>6.0.1</version>
         </dependency>
 
         <dependency>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>ee.sk.smartid</groupId>
             <artifactId>smart-id-java-client</artifactId>
-            <version>3.1-TEST2</version>
+            <version>3.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

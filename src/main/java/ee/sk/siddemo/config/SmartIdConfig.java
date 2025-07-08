@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 
 import ee.sk.smartid.AuthenticationResponseValidator;
 import ee.sk.smartid.FileTrustedCAStoreBuilder;
+import ee.sk.smartid.SignatureResponseValidator;
 import ee.sk.smartid.SmartIdClient;
 import ee.sk.smartid.TrustedCACertStore;
 
@@ -99,4 +100,17 @@ public class SmartIdConfig {
                 .build();
         return new AuthenticationResponseValidator(trustedCACertStore);
     }
+
+    @Bean
+    public SignatureResponseValidator signatureResponseValidator() {
+        TrustedCACertStore trustedCACertStore = new FileTrustedCAStoreBuilder()
+                .withOcspEnabled(false)
+                .withTrustAnchorTruststorePath(sidTrustAnchorCertsFilename)
+                .withTrustAnchorTruststorePassword(sigTrustAnchorCertsPassword)
+                .withIntermediateCATruststorePath(sidTrustedRootCertsFilename)
+                .withIntermediateCATruststorePassword(sidTrustedRootCertsPassword)
+                .build();
+        return new SignatureResponseValidator(trustedCACertStore, false);
+    }
+
 }
